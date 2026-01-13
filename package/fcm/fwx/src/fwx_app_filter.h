@@ -11,7 +11,7 @@
 #include <linux/types.h>
 
 #define MAX_APP_FILTER_RULE_NUM 64
-#define MAX_APP_ID_PER_RULE 256
+#define MAX_APP_ID_PER_RULE 1024
 
 extern u_int32_t g_appfilter_update_jiffies;
 

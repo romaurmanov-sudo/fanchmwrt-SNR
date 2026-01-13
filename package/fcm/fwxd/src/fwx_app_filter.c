@@ -9,6 +9,7 @@
 #include <libubox/uloop.h>
 #include <libubox/utils.h>
 #include <libubus.h>
+#include <uci.h>
 #include "fwx_user.h"
 #include "fwx_netlink.h"
 #include "fwx_ubus.h"
@@ -61,9 +62,17 @@ static int find_rule_index_by_id(struct uci_context *uci_ctx, int id) {
     return -1; // Not found
 }
 
+// Helper function to get option value from uci section
+static const char *get_option_value(struct uci_section *s, const char *option_name) {
+    if (!s || !option_name) return NULL;
+    struct uci_option *o = uci_lookup_option(s->package->ctx, s, option_name);
+    if (!o || o->type != UCI_TYPE_STRING) {
+        return NULL;
+    }
+    return o->v.string;
+}
 
 struct json_object *fwx_api_get_filter_rules(struct json_object *req_obj) {
-    int i;
     struct json_object *data_obj = json_object_new_object();
     struct json_object *rules_array = json_object_new_array();
     
@@ -73,136 +82,133 @@ struct json_object *fwx_api_get_filter_rules(struct json_object *req_obj) {
         return fwx_gen_api_response_data(API_CODE_ERROR, NULL);
     }
 
-    int num = fwx_uci_get_list_num(uci_ctx, "appfilter", "rule");
-    LOG_DEBUG("Found %d rules in appfilter\n", num);
-    
-    for (i = 0; i < num; i++) {
-        char buf[256];
-        char name_str[128] = {0};
-        char mode_str[16] = {0};
-        char user_mac_str[32] = {0};
-        char user_name_str[128] = {0};
-        char enabled_str[16] = {0};
-        char id_str[32] = {0};
-        LOG_DEBUG("Loading rule[%d]\n", i);
+    // Load appfilter package once
+    struct uci_package *pkg = NULL;
+    if (uci_load(uci_ctx, "appfilter", &pkg) != UCI_OK) {
+        LOG_ERROR("Failed to load appfilter package\n");
+        uci_free_context(uci_ctx);
+        return fwx_gen_api_response_data(API_CODE_ERROR, NULL);
+    }
 
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].id", i);
-        if (fwx_uci_get_value(uci_ctx, buf, id_str, sizeof(id_str)) != 0) {
-            LOG_ERROR("Failed to get id for rule[%d], skipping\n", i);
-            continue; 
+    // Traverse all sections using uci_foreach_element
+    struct uci_element *e;
+    uci_foreach_element(&pkg->sections, e) {
+        struct uci_section *s = uci_to_section(e);
+        
+        // Only process "rule" type sections
+        if (strcmp(s->type, "rule") != 0) {
+            continue;
         }
-        
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].name", i);
-        fwx_uci_get_value(uci_ctx, buf, name_str, sizeof(name_str));
-        
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].mode", i);
-        if (fwx_uci_get_value(uci_ctx, buf, mode_str, sizeof(mode_str)) != 0) {
-            strcpy(mode_str, "0"); 
+
+        LOG_DEBUG("Loading rule: %s\n", s->e.name);
+
+        // Get id - required field
+        const char *id_str = get_option_value(s, "id");
+        if (!id_str) {
+            LOG_ERROR("Failed to get id for rule %s, skipping\n", s->e.name);
+            continue;
         }
-        
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].user_mac", i);
-        fwx_uci_get_value(uci_ctx, buf, user_mac_str, sizeof(user_mac_str)); 
-        
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].user_name", i);
-        fwx_uci_get_value(uci_ctx, buf, user_name_str, sizeof(user_name_str)); 
-        
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].enabled", i);
-        if (fwx_uci_get_value(uci_ctx, buf, enabled_str, sizeof(enabled_str)) != 0) {
-            strcpy(enabled_str, "1"); 
-        }
-        LOG_DEBUG("Loading rule[%d] 11\n", i);
+
+        // Get other fields with defaults
+        const char *name_str = get_option_value(s, "name");
+        const char *mode_str = get_option_value(s, "mode");
+        const char *user_mac_str = get_option_value(s, "user_mac");
+        const char *user_name_str = get_option_value(s, "user_name");
+        const char *enabled_str = get_option_value(s, "enabled");
+
         struct json_object *rule_obj = json_object_new_object();
         if (!rule_obj) {
-            LOG_ERROR("Failed to create rule_obj for rule[%d]\n", i);
+            LOG_ERROR("Failed to create rule_obj for rule %s\n", s->e.name);
             continue;
         }
         
         json_object_object_add(rule_obj, "id", json_object_new_int(atoi(id_str)));
-        json_object_object_add(rule_obj, "name", json_object_new_string(name_str));
-        json_object_object_add(rule_obj, "mode", json_object_new_int(atoi(mode_str)));
-        json_object_object_add(rule_obj, "user_mac", json_object_new_string(user_mac_str));
-        json_object_object_add(rule_obj, "user_name", json_object_new_string(user_name_str));
-        json_object_object_add(rule_obj, "enabled", json_object_new_int(atoi(enabled_str)));
-        LOG_DEBUG("Loading rule[%d] 22\n", i);
+        json_object_object_add(rule_obj, "name", json_object_new_string(name_str ? name_str : ""));
+        json_object_object_add(rule_obj, "mode", json_object_new_int(mode_str ? atoi(mode_str) : 0));
+        json_object_object_add(rule_obj, "user_mac", json_object_new_string(user_mac_str ? user_mac_str : ""));
+        json_object_object_add(rule_obj, "user_name", json_object_new_string(user_name_str ? user_name_str : ""));
+        json_object_object_add(rule_obj, "enabled", json_object_new_int(enabled_str ? atoi(enabled_str) : 1));
 
+        // Process time_rule list
         struct json_object *time_rules_array = json_object_new_array();
-        char time_rule_list_buf[1024] = {0};
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].time_rule", i);
-        if (fwx_uci_get_list_value(uci_ctx, buf, time_rule_list_buf, sizeof(time_rule_list_buf), " ") == 0) {
+        struct uci_option *time_rule_opt = uci_lookup_option(uci_ctx, s, "time_rule");
+        if (time_rule_opt && time_rule_opt->type == UCI_TYPE_LIST) {
+            struct uci_element *time_elem;
+            uci_foreach_element(&time_rule_opt->v.list, time_elem) {
+                const char *time_rule_str = time_elem->name;
+                if (!time_rule_str) continue;
 
-            char *p = strtok(time_rule_list_buf, " ");
-
-            while (p) {
-                LOG_DEBUG("Loading rule[%d] 33 p = %s\n", i, p);
+                LOG_DEBUG("Loading time_rule: %s\n", time_rule_str);
                 struct json_object *time_rule_obj = json_object_new_object();
                 struct json_object *weekdays_array = json_object_new_array();
-                
 
-                char *saveptr;
-                char *token = strtok_r(p, ",", &saveptr);
-                char *start_time = NULL;
-                char *end_time = NULL;
-                
+                // Parse time_rule string: "weekday1,weekday2,...,start_time,end_time"
+                char *time_rule_copy = strdup(time_rule_str);
+                if (time_rule_copy) {
+                    char *saveptr;
+                    char *token = strtok_r(time_rule_copy, ",", &saveptr);
+                    char *start_time = NULL;
+                    char *end_time = NULL;
 
-                while (token) {
-
-                    if (strchr(token, ':') != NULL) {
-
-                        if (start_time == NULL) {
-                            start_time = token;
-                        } else if (end_time == NULL) {
-                            end_time = token;
-                            break; 
+                    while (token) {
+                        if (strchr(token, ':') != NULL) {
+                            // This is a time string (HH:MM format)
+                            if (start_time == NULL) {
+                                start_time = token;
+                            } else if (end_time == NULL) {
+                                end_time = token;
+                                break;
+                            }
+                        } else {
+                            // This is a weekday number
+                            int weekday = atoi(token);
+                            if (weekday >= 0 && weekday <= 6) {
+                                json_object_array_add(weekdays_array, json_object_new_int(weekday));
+                            }
                         }
-                    } else {
-
-                        int weekday = atoi(token);
-                        if (weekday >= 0 && weekday <= 6) {
-                            json_object_array_add(weekdays_array, json_object_new_int(weekday));
-                        }
+                        token = strtok_r(NULL, ",", &saveptr);
                     }
-                    token = strtok_r(NULL, ",", &saveptr);
-                }
-                
 
-                if (start_time) {
-                    json_object_object_add(time_rule_obj, "start_time", json_object_new_string(start_time));
+                    if (start_time) {
+                        json_object_object_add(time_rule_obj, "start_time", json_object_new_string(start_time));
+                    }
+                    if (end_time) {
+                        json_object_object_add(time_rule_obj, "end_time", json_object_new_string(end_time));
+                    }
+                    free(time_rule_copy);
                 }
-                if (end_time) {
-                    json_object_object_add(time_rule_obj, "end_time", json_object_new_string(end_time));
-                }
-                
+
                 json_object_object_add(time_rule_obj, "weekdays", weekdays_array);
                 json_object_array_add(time_rules_array, time_rule_obj);
-                
-                p = strtok(NULL, " ");
             }
         }
-
         json_object_object_add(rule_obj, "time_rules", time_rules_array);
-        
 
+        // Process app_id list
         struct json_object *app_ids_array = json_object_new_array();
-        char app_id_list_buf[1024] = {0};
-        snprintf(buf, sizeof(buf), "appfilter.@rule[%d].app_id", i);
-        if (fwx_uci_get_list_value(uci_ctx, buf, app_id_list_buf, sizeof(app_id_list_buf), " ") == 0) {
-            char *p = strtok(app_id_list_buf, " ");
-            while (p) {
-                int app_id = atoi(p);
+        struct uci_option *app_id_opt = uci_lookup_option(uci_ctx, s, "app_id");
+        if (app_id_opt && app_id_opt->type == UCI_TYPE_LIST) {
+            struct uci_element *app_elem;
+            uci_foreach_element(&app_id_opt->v.list, app_elem) {
+                const char *app_id_str = app_elem->name;
+                if (!app_id_str) continue;
+                int app_id = atoi(app_id_str);
                 if (app_id > 0) {
                     json_object_array_add(app_ids_array, json_object_new_int(app_id));
                 }
-                p = strtok(NULL, " ");
             }
         }
         json_object_object_add(rule_obj, "app_ids", app_ids_array);
         
         json_object_array_add(rules_array, rule_obj);
-        LOG_DEBUG("Successfully loaded rule[%d]: id=%s, name=%s\n", i, id_str, name_str);
+        LOG_DEBUG("Successfully loaded rule: id=%s, name=%s\n", id_str, name_str ? name_str : "");
     }
     
-    json_object_object_add(data_obj, "data", rules_array);
+    // Unload package
+    uci_unload(uci_ctx, pkg);
     uci_free_context(uci_ctx);
+    
+    json_object_object_add(data_obj, "data", rules_array);
     
     LOG_DEBUG("Returning %d rules\n", json_object_array_length(rules_array));
 

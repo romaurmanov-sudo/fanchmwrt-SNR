@@ -6,23 +6,27 @@
 -#}
 
 {%
-	import { getuid, getspnam } from 'luci.core';
-
-	const boardinfo = ubus.call('system', 'board');
-	const darkpref = 'true';
-	http.prepare_content('text/html; charset=UTF-8');
+        import { getuid, getspnam } from 'luci.core';
+        const boardinfo = ubus.call('system', 'board');
+        const darkpref = 'true';
+        const obj={};
+        obj.config="fwx";
+        obj.section="global";
+        obj.option="theme_mode";
+        const theme_mode=ubus.call('uci', 'get', obj);
+        http.prepare_content('text/html; charset=UTF-8');
 -%}
 
 <!DOCTYPE html>
-<html lang="{{ dispatcher.lang }}" {{ darkpref ? `data-darkmode="${darkpref}"` : '' }}>
+<html lang="{{ dispatcher.lang }}" {{ theme_mode && theme_mode.value == 1 ? `data-darkmode="true"` : 'false' }}>
 	<head>
 		<meta charset="utf-8">
-		<title>{{ striptags(`${boardinfo.hostname ?? '?'}${node ? ` - ${node.title}` : ''}`) }} - LuCI</title>
+		<title>FanchmWrt</title>
 		{% if (!darkpref): %}
 			<script>
 				var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)'),
-				    rootElement = document.querySelector(':root'),
-				    setDarkMode = function(match) { rootElement.setAttribute('data-darkmode', match.matches) };
+					rootElement = document.querySelector(':root'),
+					setDarkMode = function(match) { rootElement.setAttribute('data-darkmode', match.matches) };
 
 				mediaQuery.addEventListener('change', setDarkMode);
 				setDarkMode(mediaQuery);
