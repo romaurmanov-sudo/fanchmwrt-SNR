@@ -178,7 +178,7 @@ struct json_object *fwx_api_get_mac_filter_rules(struct json_object *req_obj) {
         LOG_DEBUG("Successfully loaded macfilter rule[%d]: id=%s, name=%s\n", i, id_str, name_str);
     }
     
-    json_object_object_add(data_obj, "data", rules_array);
+    json_object_object_add(data_obj, "list", rules_array);
     uci_free_context(uci_ctx);
     
     LOG_DEBUG("Returning %d macfilter rules\n", json_object_array_length(rules_array));

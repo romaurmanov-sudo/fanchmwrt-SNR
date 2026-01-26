@@ -165,6 +165,7 @@ appfilter_handle_dev_visit_list(struct ubus_context *ctx, struct ubus_object *ob
     json_object_object_add(root_obj, "hostname", json_object_new_string(node->hostname));
     json_object_object_add(root_obj, "mac", json_object_new_string(node->mac));
     json_object_object_add(root_obj, "ip", json_object_new_string(node->ip));
+    json_object_object_add(root_obj, "ipv6", json_object_new_string(node->ipv6));
 
 
     struct json_object *online_array = json_object_new_array();
@@ -469,6 +470,7 @@ appfilter_handle_dev_list(struct ubus_context *ctx, struct ubus_object *obj,
             char hostname[128] = {0};
             get_hostname_by_mac(node->mac, hostname);
             json_object_object_add(dev_obj, "ip", json_object_new_string(node->ip));
+            json_object_object_add(dev_obj, "ipv6", json_object_new_string(node->ipv6));
 
             json_object_object_add(dev_obj, "online", json_object_new_int(1));
             json_object_object_add(dev_obj, "hostname", json_object_new_string(hostname));
@@ -721,6 +723,7 @@ void all_users_callback(void *arg, client_node_t *client)
 
     if (flag > 0) {
         json_object_object_add(user_obj, "ip", json_object_new_string(client->ip));
+        json_object_object_add(user_obj, "ipv6", json_object_new_string(client->ipv6));
         LOG_DEBUG("all_users_callback: Added IP: %s for mac=%s\n", client->ip, client->mac);
     }
 
@@ -1037,6 +1040,7 @@ struct json_object *fwx_api_dev_visit_list(struct json_object *req_obj) {
         json_object_object_add(root_obj, "hostname", json_object_new_string(""));
         json_object_object_add(root_obj, "mac", json_object_new_string(mac));
         json_object_object_add(root_obj, "ip", json_object_new_string(""));
+        json_object_object_add(root_obj, "ipv6", json_object_new_string(""));
         json_object_object_add(root_obj, "total_num", json_object_new_int(0));
         json_object_object_add(root_obj, "total_page", json_object_new_int(1));
         json_object_object_add(root_obj, "page", json_object_new_int(page));
@@ -1215,6 +1219,7 @@ struct json_object *fwx_api_dev_list(struct json_object *req_obj) {
         struct json_object *dev_obj = json_object_new_object();
         json_object_object_add(dev_obj, "mac", json_object_new_string(node->mac));
         json_object_object_add(dev_obj, "ip", json_object_new_string(node->ip));
+        json_object_object_add(dev_obj, "ipv6", json_object_new_string(node->ipv6));
         json_object_object_add(dev_obj, "hostname", json_object_new_string(node->hostname));
         json_object_object_add(dev_obj, "nickname", json_object_new_string(node->nickname));
         json_object_object_add(dev_obj, "online", json_object_new_int(node->online));
@@ -1408,6 +1413,7 @@ struct json_object *fwx_api_visit_list(struct json_object *req_obj) {
         json_object_object_add(dev_obj, "hostname", json_object_new_string(node->hostname ? node->hostname : "unknown"));
         json_object_object_add(dev_obj, "mac", json_object_new_string(node->mac));
         json_object_object_add(dev_obj, "ip", json_object_new_string(node->ip));
+        json_object_object_add(dev_obj, "ipv6", json_object_new_string(node->ipv6));
         
         struct json_object *online_array = json_object_new_array();
         struct json_object *offline_array = json_object_new_array();
@@ -3221,6 +3227,7 @@ struct json_object *fwx_api_get_hourly_top_apps(struct json_object *req_obj) {
         json_object_object_add(traffic_obj, "down_bytes", json_object_new_int64(stat->hourly_traffic[hour].down_bytes));
         json_object_object_add(hour_obj, "traffic", traffic_obj);
         json_object_object_add(hour_obj, "online_time", json_object_new_int64(stat->hourly_online_time[hour]));
+        json_object_object_add(hour_obj, "active_time", json_object_new_int64(stat->hourly_active_time[hour]));
         json_object_array_add(hourly_array, hour_obj);
     }
     
@@ -3997,6 +4004,7 @@ struct json_object *fwx_api_get_user_basic_info(struct json_object *req_obj) {
 
             json_object_object_add(data_obj, "mac", json_object_new_string(client->mac));
             json_object_object_add(data_obj, "ip", json_object_new_string(client->ip));
+            json_object_object_add(data_obj, "ipv6", json_object_new_string(client->ipv6));
             json_object_object_add(data_obj, "nickname", json_object_new_string(client->nickname));
             json_object_object_add(data_obj, "hostname", json_object_new_string(client->hostname));
             json_object_object_add(data_obj, "online", json_object_new_int(client->online));
@@ -4006,32 +4014,21 @@ struct json_object *fwx_api_get_user_basic_info(struct json_object *req_obj) {
             unsigned long long today_up_bytes = 0;
             unsigned long long today_down_bytes = 0;
             unsigned long long today_online_time = 0;
+            unsigned long long today_active_time = 0;
             
             if (today_stat) {
                 for (hour = 0; hour < HOURS_PER_DAY; hour++) {
                     today_up_bytes += today_stat->hourly_traffic[hour].up_bytes;
                     today_down_bytes += today_stat->hourly_traffic[hour].down_bytes;
                     today_online_time += today_stat->hourly_online_time[hour];
+                    today_active_time += today_stat->hourly_active_time[hour];
                 }
             }
             
             json_object_object_add(data_obj, "today_up_bytes", json_object_new_int64(today_up_bytes));
             json_object_object_add(data_obj, "today_down_bytes", json_object_new_int64(today_down_bytes));
             json_object_object_add(data_obj, "today_online_time", json_object_new_int64(today_online_time));
-            
-
-            unsigned long long today_online_duration = 0;
-            if (client->online == 1 && client->online_time >= today_start) {
-                today_online_duration = cur_time - (client->online_time > today_start ? client->online_time : today_start);
-            } else if (client->online == 0 && client->offline_time >= today_start && client->online_time >= today_start) {
-                today_online_duration = client->offline_time - client->online_time;
-            } else if (client->online == 0 && client->offline_time < today_start && client->online_time < today_start) {
-                today_online_duration = 0;
-            } else if (client->online == 0 && client->offline_time >= today_start && client->online_time < today_start) {
-                today_online_duration = client->offline_time - today_start;
-            }
-            
-            json_object_object_add(data_obj, "today_online_duration", json_object_new_int64(today_online_duration));
+            json_object_object_add(data_obj, "today_active_time", json_object_new_int64(today_active_time));
             
 
             return fwx_gen_api_response_data(API_CODE_SUCCESS, data_obj);
@@ -4452,6 +4449,7 @@ struct json_object *fwx_api_set_dashboard_param(struct json_object *req_obj) {
     return fwx_gen_api_response_data(API_CODE_SUCCESS, NULL);
 }
 
+
 typedef struct json_object * (*fwx_api_handler)(struct json_object *data_obj);
 
 typedef struct fwx_api_node{
@@ -4488,6 +4486,7 @@ struct json_object *fwx_api_visit_list(struct json_object *req_obj);
 struct json_object *fwx_api_get_device_list(struct json_object *req_obj);
 struct json_object *fwx_api_get_dashboard_param(struct json_object *req_obj);
 struct json_object *fwx_api_set_dashboard_param(struct json_object *req_obj);
+
 
 
 static fwx_api_node_t fwx_api_node_list[] = {
@@ -4550,6 +4549,7 @@ static fwx_api_node_t fwx_api_node_list[] = {
     {"get_device_list", fwx_api_get_device_list},
     {"get_dashboard_param", fwx_api_get_dashboard_param},
     {"set_dashboard_param", fwx_api_set_dashboard_param},
+
     {NULL, NULL}
 };
 

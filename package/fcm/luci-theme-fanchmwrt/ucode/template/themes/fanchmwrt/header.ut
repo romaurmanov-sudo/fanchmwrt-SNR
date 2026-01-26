@@ -49,7 +49,7 @@
 
 	<body class="lang_{{ dispatcher.lang }} {{ entityencode(striptags(node?.title ?? ''), true) }}" data-page="{{ entityencode(join('-', ctx.request_path), true) }}">
 		{% if (!blank_page): %}
-		<header>
+		<header style="display:none">
 			<a class="brand" href="/">{{ striptags(boardinfo.hostname ?? '?') }}</a>
 			<ul class="nav" id="topmenu-mobile" style="display:none"></ul>
 			<div id="indicators" class="pull-right"></div>

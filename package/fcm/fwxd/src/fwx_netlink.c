@@ -82,7 +82,6 @@ void fwx_netlink_handler(struct uloop_fd *u, unsigned int ev)
         LOG_ERROR("parse json failed:%s", kdata);
         return;
     }
-    LOG_DEBUG("parse json success, kdata = %s\n", kdata);
 
     struct json_object *mac_obj = json_object_object_get(root, "mac");
 
@@ -112,8 +111,22 @@ void fwx_netlink_handler(struct uloop_fd *u, unsigned int ev)
     if (ip_obj)
         strncpy(node->ip, json_object_get_string(ip_obj), sizeof(node->ip));
     
+    struct json_object *ipv6_obj = json_object_object_get(root, "ipv6");
+    if (ipv6_obj) {
+        const char *ipv6_str = json_object_get_string(ipv6_obj);
+        if (ipv6_str && strlen(ipv6_str) > 0) {
+            strncpy(node->ipv6, ipv6_str, sizeof(node->ipv6) - 1);
+            node->ipv6[sizeof(node->ipv6) - 1] = '\0';
+            LOG_DEBUG("fwx_netlink: received ipv6=%s for %s\n", node->ipv6, mac);
+        } else {
+            node->ipv6[0] = '\0';
+        }
+    } else {
+        node->ipv6[0] = '\0';
+    }
     
     struct json_object *active_obj = json_object_object_get(root, "active");
+    int prev_active = node->active;
     if (active_obj) {
         node->active = json_object_get_int(active_obj);
         LOG_DEBUG("fwx_netlink: received active=%d for %s\n", node->active, mac);
@@ -151,9 +164,29 @@ void fwx_netlink_handler(struct uloop_fd *u, unsigned int ev)
         hour = tm_info->tm_hour;
     }
     
+    daily_hourly_stat_t *today_stat = NULL;
+    if (hour >= 0 && hour < HOURS_PER_DAY) {
+        today_stat = get_today_stat(node);
+        
+        if (node->online == 1) {
+            if (today_stat) {
+                today_stat->hourly_online_time[hour] += REPORT_INTERVAL_SECS;
+                LOG_DEBUG("fwx_netlink: updated hourly_online_time[%d] for %s: +%d seconds\n",
+                         hour, mac, REPORT_INTERVAL_SECS);
+            }
+        }
+        
+        if (node->active == 1) {
+            if (today_stat) {
+                today_stat->hourly_active_time[hour] += REPORT_INTERVAL_SECS;
+                LOG_DEBUG("fwx_netlink: updated hourly_active_time[%d] for %s: +%d seconds\n",
+                         hour, mac, REPORT_INTERVAL_SECS);
+            }
+        }
+    }
+    
     
     if (hour >= 0 && hour < HOURS_PER_DAY && (total_up_bytes > 0 || total_down_bytes > 0)) {
-        daily_hourly_stat_t *today_stat = get_today_stat(node);
         if (today_stat) {
             
             today_stat->hourly_traffic[hour].up_bytes += total_up_bytes;
@@ -218,15 +251,6 @@ void fwx_netlink_handler(struct uloop_fd *u, unsigned int ev)
         
         
         update_global_app_type_stats(appid, REPORT_INTERVAL_SECS);
-        
-        
-        if (hour >= 0 && hour < HOURS_PER_DAY) {
-            daily_hourly_stat_t *today_stat = get_today_stat(node);
-            if (today_stat) {
-                
-                today_stat->hourly_online_time[hour] += REPORT_INTERVAL_SECS;
-            }
-        }
 
 
 

@@ -874,7 +874,9 @@ void dump_client_list(void)
     {
         return;
     }
-    fprintf(fp, "%-4s %-20s %-20s %-32s %-8s\n", "Id", "Mac Addr", "Ip Addr", "Hostname", "Online");
+  
+    fprintf(fp, "%-4s %-20s %-20s %-32s %-8s %-12s %-12s\n", 
+            "Id", "Mac Addr", "Ip Addr", "Hostname", "Online", "OnlineTime", "OfflineTime");
     
 
     client_node_t *node = NULL;
@@ -889,8 +891,9 @@ void dump_client_list(void)
                 strcpy(ip_buf, "*");
             else
                 strcpy(ip_buf, node->ip);
-            fprintf(fp, "%-4d %-20s %-20s %-32s %-8d\n",
-                    count + 1, node->mac, ip_buf, hostname_buf, node->online);
+            fprintf(fp, "%-4d %-20s %-20s %-32s %-8d %-12u %-12u\n",
+                    count + 1, node->mac, ip_buf, hostname_buf, node->online, 
+                    node->online_time, node->offline_time);
             count++;
             if (count >= MAX_SUPPORT_DEV_NUM)
                 goto EXIT;
@@ -911,8 +914,9 @@ void dump_client_list(void)
             else
                 strcpy(ip_buf, node->ip);
 
-            fprintf(fp, "%-4d %-20s %-20s %-32s %-8d\n",
-                    count + 1, node->mac, ip_buf, hostname_buf, node->online);
+            fprintf(fp, "%-4d %-20s %-20s %-32s %-8d %-12u %-12u\n",
+                    count + 1, node->mac, ip_buf, hostname_buf, node->online,
+                    node->online_time, node->offline_time);
             count++;
             if (count >= MAX_SUPPORT_DEV_NUM)
                 goto EXIT;
@@ -1087,6 +1091,7 @@ daily_hourly_stat_t *get_today_stat(client_node_t *client) {
         client->daily_stats.hourly_traffic[i].up_bytes = 0;
         client->daily_stats.hourly_traffic[i].down_bytes = 0;
         client->daily_stats.hourly_online_time[i] = 0;
+        client->daily_stats.hourly_active_time[i] = 0;
     }
     
     return &client->daily_stats;
@@ -1333,6 +1338,7 @@ void save_daily_stats_to_file(client_node_t *client, u_int32_t date) {
         
         
         json_object_object_add(hour_obj, "online_time", json_object_new_int64(stat->hourly_online_time[hour]));
+        json_object_object_add(hour_obj, "active_time", json_object_new_int64(stat->hourly_active_time[hour]));
         
         json_object_array_add(hourly_array, hour_obj);
     }
@@ -1650,6 +1656,7 @@ void check_and_archive_all_clients(void) {
             node->daily_stats.hourly_traffic[i].up_bytes = 0;
             node->daily_stats.hourly_traffic[i].down_bytes = 0;
             node->daily_stats.hourly_online_time[i] = 0;
+            node->daily_stats.hourly_active_time[i] = 0;
         }
         
         node->daily_top_apps_stats.date = today;

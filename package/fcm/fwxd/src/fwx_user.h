@@ -82,6 +82,7 @@ typedef struct daily_hourly_stat
     traffic_stat_t hourly_traffic[HOURS_PER_DAY];
     
     unsigned long long hourly_online_time[HOURS_PER_DAY];
+    unsigned long long hourly_active_time[HOURS_PER_DAY];
 } daily_hourly_stat_t;
 
 

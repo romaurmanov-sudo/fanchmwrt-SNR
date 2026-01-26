@@ -445,11 +445,9 @@ int __af_visit_info_report(af_client_info_t *node)
 	if (!out)
 		return 0;
 	cJSON_Minify(out);
-	if (count > 0 || node->report_count == 0)
-	{
-		node->report_count++;
-		af_send_msg_to_user(out, strlen(out));
-	}
+
+	node->report_count++;
+	af_send_msg_to_user(out, strlen(out));
 	cJSON_Delete(root_obj);
 
 	memset(&node->period_flow, 0x0, sizeof(node->period_flow));

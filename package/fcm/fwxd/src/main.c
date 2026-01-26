@@ -258,6 +258,16 @@ void fwx_handle_sigusr1(int sig) {
     g_feature_update = 1;
 }
 
+void fwx_handle_sigusr2(int sig) {
+    LOG_INFO("Received SIGUSR2 signal\n");
+	if (current_log_level < LOG_LEVEL_DEBUG)
+   		current_log_level++;
+	else
+		current_log_level = LOG_LEVEL_WARN;
+
+	LOG_WARN("change log level to %d\n", current_log_level);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -265,7 +275,8 @@ int main(int argc, char **argv)
     LOG_INFO("fwx start");
     g_feature_update = 1;
     uloop_init();
-    signal(SIGUSR1, fwx_handle_sigusr1);
+    signal(SIGUSR1, fwx_handle_sigusr1);	
+    signal(SIGUSR2, fwx_handle_sigusr2);
     signal(SIGCHLD, SIG_IGN);
     init_client_list();
     load_app_valid_time_config();

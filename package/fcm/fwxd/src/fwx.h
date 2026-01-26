@@ -27,16 +27,16 @@ typedef struct fwx_status {
 extern fwx_status_t g_fwx_status;
 
 typedef enum {
-    LOG_LEVEL_DEBUG,
-    LOG_LEVEL_INFO,
-    LOG_LEVEL_WARN,
-    LOG_LEVEL_ERROR
+	LOG_LEVEL_ERROR,
+	LOG_LEVEL_WARN,
+   	LOG_LEVEL_INFO,
+    LOG_LEVEL_DEBUG
 } LogLevel;
 
 extern int current_log_level;
 
 static void af_log(LogLevel level, const char *func, int line, const char *format, ...){
-    if (level < current_log_level) 
+    if (level > current_log_level) 
         return;
     
     FILE *log_file = fopen(LOG_FILE_PATH, "a");

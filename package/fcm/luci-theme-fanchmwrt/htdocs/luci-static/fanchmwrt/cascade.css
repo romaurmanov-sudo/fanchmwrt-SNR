@@ -309,6 +309,7 @@ textarea {
 }
 
 /*
+padding: 0 5px 5px 5px;
  * Scaffolding
  * Basic and global styles for generating a grid system, structural layout, and page templates
  * ------------------------------------------------------------------------------------------- */
@@ -1116,7 +1117,7 @@ header {
 	min-width: 1024px; 
 	max-width: 100%; 
 	margin: 0 auto; 
-	margin-top: 50px !important; 
+	margin-top: 5px !important; 
 	width: 100%;
 	box-sizing: border-box;
 	gap: 10px;  
@@ -1124,7 +1125,7 @@ header {
 
 @media (min-width: 769px) {
 	.main-layout {
-		margin-top: 50px !important; 
+		margin-top: 5px !important; 
 		padding-left: 5px; 
 	}
 }
@@ -1135,11 +1136,9 @@ header {
 	border-radius: 0; 
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	padding: 0;
-	margin: 0;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+	margin: -5px -5px 0 -5px;
+	position: relative;
+	width: calc(100% + 10px);
 	z-index: 10000; 
 	height: 40px;
 	display: flex;
@@ -1150,8 +1149,11 @@ header {
 
 @media (min-width: 769px) {
 	.top-navbar {
-		margin-left: 0px; 
-		margin-right: 0px; 
+		margin-top: -5px;
+		margin-left: -5px; 
+		margin-right: -5px; 
+		margin-bottom: 0;
+		width: calc(100% + 10px);
 	}
 }
 
@@ -1160,7 +1162,7 @@ header {
 	max-width: 100%; 
 	width: 100%;
 	margin: 0 auto;
-	padding: 8px 5px;
+	padding: 8px 10px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between; 
@@ -1169,8 +1171,8 @@ header {
 
 @media (min-width: 769px) {
 	.top-navbar-content {
-		padding-left: 5px; 
-		padding-right: 5px;  
+		padding-left: 10px; 
+		padding-right: 10px;  
 	}
 }
 
@@ -1179,7 +1181,7 @@ header {
 	max-width: 100%; 
 	width: 100%;
 	margin: 0 auto;
-	padding: 8px 5px;
+	padding: 8px 10px;
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
