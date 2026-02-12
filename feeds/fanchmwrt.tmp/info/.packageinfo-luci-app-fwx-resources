@@ -1,0 +1,22 @@
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-resources/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-resources
+Submenu: 3. Applications
+Version: 1.0.1-r1
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx resources
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx resources
+@@
+
+

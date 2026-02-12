@@ -1,0 +1,40 @@
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-record/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-record
+Submenu: 3. Applications
+Version: 1.0.0-r1
+Depends: +libc +luci-compat +luci-app-fwx-resources +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx record
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx record
+@@
+
+Package: luci-i18n-fwx-record-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-record
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-record - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-record - 简体中文 (Simplified Chinese)
+@@
+
+

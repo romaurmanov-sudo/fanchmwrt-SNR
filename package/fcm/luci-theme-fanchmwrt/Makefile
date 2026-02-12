@@ -7,8 +7,9 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=FanchmWrt Theme (default)
-LUCI_DEPENDS:=+luci-base +@LUCI_LANG_zh_Hans +luci-i18n-base-zh-cn
+LUCI_DEPENDS:=+luci-base
 PKG_LICENSE:=Apache-2.0
+PKGARCH:=all
 
 define Package/luci-theme-fanchmwrt/postrm
 #!/bin/sh

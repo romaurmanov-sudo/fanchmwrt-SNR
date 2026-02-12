@@ -1,0 +1,382 @@
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-appfilter/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-appfilter
+Submenu: 3. Applications
+Version: 1.0.1-r1
+Depends: +libc +fwxd +kmod-fwx +luci-compat +luci-app-fwx-resources +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx appfilter
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx appfilter
+@@
+
+Package: luci-i18n-fwx-appfilter-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-appfilter
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-appfilter - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-appfilter - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-dashboard/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-dashboard
+Submenu: 3. Applications
+Version: 1.0.1-r1
+Depends: +libc +fwxd +kmod-fwx +luci-compat +luci-app-fwx-appfilter +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx dashboard
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx dashboard
+@@
+
+Package: luci-i18n-fwx-dashboard-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-dashboard
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-dashboard - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-dashboard - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-dashboard-setting/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-dashboard-setting
+Submenu: 3. Applications
+Version: 1.0-r1
+Depends: +libc +luci-compat +luci-lib-jsonc +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI app for Dashboard Setting
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI app for Dashboard Setting
+@@
+
+Package: luci-i18n-fwx-dashboard-setting-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-dashboard-setting
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-dashboard-setting - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-dashboard-setting - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-feature/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-feature
+Submenu: 3. Applications
+Version: 1.0.0-r1
+Depends: +libc +luci-compat +luci-app-fwx-resources +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx feature library upgrade
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx feature library upgrade
+@@
+
+Package: luci-i18n-fwx-feature-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-feature
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-feature - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-feature - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-macfilter/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-macfilter
+Submenu: 3. Applications
+Version: 1.0.1-r1
+Depends: +libc +fwxd +kmod-fwx +luci-compat +luci-app-fwx-appfilter +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx macfilter
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx macfilter
+@@
+
+Package: luci-i18n-fwx-macfilter-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-macfilter
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-macfilter - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-macfilter - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-network/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-network
+Submenu: 3. Applications
+Version: 1.0-r1
+Depends: +libc +luci-compat +luci-lib-jsonc +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI app for Network Setting
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI app for Network Setting
+@@
+
+Package: luci-i18n-fwx-network-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-network
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-network - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-network - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-record/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-record
+Submenu: 3. Applications
+Version: 1.0.0-r1
+Depends: +libc +luci-compat +luci-app-fwx-resources +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx record
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx record
+@@
+
+Package: luci-i18n-fwx-record-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-record
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-record - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-record - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-resources/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-resources
+Submenu: 3. Applications
+Version: 1.0.1-r1
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx resources
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx resources
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-system/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-system
+Submenu: 3. Applications
+Version: 1.0-r1
+Depends: +libc +luci-compat +luci-lib-jsonc +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI app for System Configuration
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI app for System Configuration
+@@
+
+Package: luci-i18n-fwx-system-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-system
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-system - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-system - 简体中文 (Simplified Chinese)
+@@
+
+
+Source-Makefile: feeds/fanchmwrt/luci-app-fwx-user/Makefile
+Build-Depends: lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host 
+
+Package: luci-app-fwx-user
+Submenu: 3. Applications
+Version: 1.0.0-r1
+Depends: +libc +fwxd +luci-compat +luci-app-fwx-resources +luci-lua-runtime
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: LuCI support for fwx user management
+Maintainer: OpenWrt LuCI community
+Source: 
+URL: https://github.com/openwrt/luci
+Type: ipkg
+Description: LuCI support for fwx user management
+@@
+
+Package: luci-i18n-fwx-user-zh-cn
+Default: LUCI_LANG_zh_Hans||(ALL&&m)
+Version: x
+Depends: +libc luci-app-fwx-user
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: luci
+Category: LuCI
+Repository: base
+Title: luci-app-fwx-user - zh-cn translation
+Maintainer: 
+Source: 
+Type: ipkg
+Hidden: 1
+Description:     Translation for luci-app-fwx-user - 简体中文 (Simplified Chinese)
+@@
+
+
