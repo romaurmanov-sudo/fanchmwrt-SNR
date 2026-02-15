@@ -846,33 +846,6 @@ define U-Boot/mt7988_rfb-sd
   DEPENDS:=+trusted-firmware-a-mt7988-sdmmc-comb
 endef
 
-
-define U-Boot/snr_cpe_ax2
-  NAME:=SNR CPE AX2
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=snr_snr-cpe-ax2
-  UBOOT_CONFIG:=mt7981_snr_cpe_ax2
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=spim-nand
-  BL2_SOC:=mt7981
-  BL2_DDRTYPE:=ddr3
-  DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
-endef
-
-
-define U-Boot/snr_cpe_ax2
-  NAME:=SNR CPE AX2
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=snr_snr-cpe-ax2
-  UBOOT_CONFIG:=mt7981_snr_cpe_ax2
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=spim-nand
-  BL2_SOC:=mt7981
-  BL2_DDRTYPE:=ddr3
-  DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
-endef
-
-
 define U-Boot/snr_cpe_ax2
   NAME:=SNR CPE AX2
   BUILD_SUBTARGET:=filogic
@@ -886,7 +859,6 @@ define U-Boot/snr_cpe_ax2
 endef
 
 UBOOT_TARGETS := \
-	snr_cpe_ax2 \
 	snr_cpe_ax2 \
 	mt7620_mt7530_rfb \
 	mt7620_rfb \
