@@ -373,39 +373,142 @@
 		nand-ecc-engine = <&snfi>;
 		reg = <0>;
 		spi-rx-bus-width = <4>;
-		spi-tx-bus-width = <4>;	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
+		spi-tx-bus-width = <4>;
 
-		partition@0 {
-			label = "BL2";
-			reg = <0x0 0x100000>;
-			read-only;
-		};
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
-		partition@100000 {
-			label = "u-boot-env";
-			reg = <0x100000 0x80000>;
-		};
+			partition@0 {
+				label = "Preloader";
+				reg = <0x00000 0x0080000>;
+				read-only;
+			};
 
-		partition@180000 {
-			label = "Factory";
-			reg = <0x180000 0x200000>;
-			read-only;
-		};
+			partition@80000 {
+				label = "ATF";
+				reg = <0x80000 0x0040000>;
+				read-only;
+			};
 
-		partition@380000 {
-			label = "FIP";
-			reg = <0x380000 0x200000>;
-			read-only;
-		};
+			partition@c0000 {
+				label = "Bootloader";
+				reg = <0xc0000 0x0080000>;
+				read-only;
+			};
 
-		partition@580000 {
-			label = "ubi";
-			reg = <0x580000 0x7a80000>;
+			partition@140000 {
+				label = "Config";
+				reg = <0x140000 0x0080000>;
+			};
+
+			factory: partition@1c0000 {
+				label = "Factory";
+				reg = <0x1c0000 0x0100000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					macaddr_factory_7fff4: macaddr@7fff4 {
+						reg = <0x7fff4 0x6>;
+					};
+
+					macaddr_factory_7fffa: macaddr@7fffa {
+						reg = <0x7fffa 0x6>;
+					};
+				};
+			};
+
+			partition@2c0000 {
+				label = "firmware";
+				reg = <0x2c0000 0x2600000>;
+
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+					label = "kernel";
+					reg = <0x0 0x600000>;
+				};
+
+				partition@600000 {
+					label = "ubi";
+					reg = <0x600000 0x2000000>;
+				};
+			};
+
+			partition@28c0000 {
+				label = "firmware_backup";
+				reg = <0x28c0000 0x2600000>;
+				read-only;
+			};
+
+			partition@4ec0000 {
+				label = "CFG";
+				reg = <0x4ec0000 0x800000>;
+				read-only;
+			};
+
+			partition@56c0000 {
+				label = "RAE";
+				reg = <0x56c0000 0x400000>;
+				read-only;
+			};
+
+			partition@5ac0000 {
+				label = "POT";
+				reg = <0x5ac0000 0x100000>;
+				read-only;
+			};
+
+			partition@5bc0000 {
+				label = "Language";
+				reg = <0x5bc0000 0x400000>;
+				read-only;
+			};
+
+			partition@5fc0000 {
+				label = "Traffic";
+				reg = <0x5fc0000 0x200000>;
+				read-only;
+			};
+
+			partition@61c0000 {
+				label = "Cert";
+				reg = <0x61c0000 0x100000>;
+				read-only;
+			};
+
+			partition@62c0000 {
+				label = "NTGRcryptK";
+				reg = <0x62c0000 0x100000>;
+				read-only;
+			};
+
+			partition@63c0000 {
+				label = "NTGRcryptD";
+				reg = <0x63c0000 0x500000>;
+				read-only;
+			};
+
+			partition@68c0000 {
+				label = "LOG";
+				reg = <0x68c0000 0x100000>;
+				read-only;
+			};
+
+			partition@69c0000 {
+				label = "User_data";
+				reg = <0x69c0000 0x640000>;
+				read-only;
+			};
+
 		};
-	};
 	};
 };
 

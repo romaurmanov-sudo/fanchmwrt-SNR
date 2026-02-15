@@ -60,38 +60,70 @@
 	mediatek,nmbm;
 	mediatek,bmt-max-ratio = <1>;
 	mediatek,bmt-max-reserved-blocks = <64>;
-	mediatek,bmt-remap-range = <0x000000 0x580000>;	partitions {
+	mediatek,bmt-remap-range = <0x000000 0x580000>;
+
+	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
 		#size-cells = <1>;
 
 		partition@0 {
-			label = "BL2";
-			reg = <0x0 0x100000>;
+			label = "u-boot";
+			reg = <0x0 0x80000>;
 			read-only;
+		};
+
+		partition@80000 {
+			label = "u-boot-env";
+			reg = <0x80000 0x80000>;
 		};
 
 		partition@100000 {
-			label = "u-boot-env";
+			label = "factory";
 			reg = <0x100000 0x80000>;
+			read-only;
+
+			nvmem-layout {
+				compatible = "fixed-layout";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				eeprom_factory_0: eeprom@0 {
+					reg = <0x0 0xe00>;
+				};
+
+				macaddr_factory_4: macaddr@4 {
+					compatible = "mac-base";
+					reg = <0x4 0x6>;
+					#nvmem-cell-cells = <1>;
+				};
+
+				precal_factory_e10: precal@e10 {
+					reg = <0xe10 0x19c10>;
+				};
+			};
 		};
 
 		partition@180000 {
-			label = "Factory";
-			reg = <0x180000 0x200000>;
-			read-only;
+			label = "firmware";
+			reg = <0x180000 0x7680000>;
+
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "kernel";
+				reg = <0x0 0x400000>;
+			};
+
+			partition@400000 {
+				label = "ubi";
+				reg = <0x400000 0x7280000>;
+			};
 		};
 
-		partition@380000 {
-			label = "FIP";
-			reg = <0x380000 0x200000>;
-			read-only;
-		};
-
-		partition@580000 {
-			label = "ubi";
-			reg = <0x580000 0x7a80000>;
-		};
+		/* last 8 MiB is reserved for NMBM bad block table */
 	};
 };
 
